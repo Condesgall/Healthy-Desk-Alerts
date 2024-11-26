@@ -24,6 +24,7 @@ export class HomeViewComponent implements OnInit {
 
   private intervalId: any;
   private holdTime: number = 200;
+  alertPopupVisible = false;
 
   ngOnInit(): void {
     this.hours = this.homeService.hours;
@@ -31,6 +32,7 @@ export class HomeViewComponent implements OnInit {
     this.profiles = this.homeService.profiles;
     this.motivationLevel = this.homeService.motivationLevel;
     this.profileId = this.homeService.profileId;
+    this.alertPopupVisible = true;
   }
 
   // updateDeskHeight(){
@@ -173,5 +175,9 @@ export class HomeViewComponent implements OnInit {
 
   removeProfile(index: number) {
     this.profiles.splice(index, 1);
+  }
+
+  toggleAlertPopup() {
+    this.alertPopupVisible = !this.alertPopupVisible;
   }
 }

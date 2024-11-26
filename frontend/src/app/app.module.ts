@@ -11,13 +11,14 @@ import { StreakPopupModule } from './streak-popup/streak-popup.module';
 import { RegisterComponent } from './register/register-view/register.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DeskConnectModule } from './desk-connect/desk-connect.module';
+import { AlertPopupModule } from './alert-popup/alert-popup.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginViewComponent,
-    RegisterComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +29,8 @@ import { DeskConnectModule } from './desk-connect/desk-connect.module';
     FormsModule,
     AccountPopupModule,
     StreakPopupModule,
-    DeskConnectModule
+    DeskConnectModule,
+    AlertPopupModule
   ],
   providers: [],
   bootstrap: [AppComponent]
