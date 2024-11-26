@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertModule } from '../alert.module';
 import { AlertService } from '../alert.service';
+
 @Component({
   selector: 'app-alert-view',
   templateUrl: './alert-view.component.html',

@@ -12,7 +12,11 @@ import { RegisterComponent } from './register/register-view/register.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DeskConnectModule } from './desk-connect/desk-connect.module';
 import { AlertPopupModule } from './alert-popup/alert-popup.module';
-
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -30,9 +34,15 @@ import { AlertPopupModule } from './alert-popup/alert-popup.module';
     AccountPopupModule,
     StreakPopupModule,
     DeskConnectModule,
-    AlertPopupModule
+    AlertPopupModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatToolbarModule,
+    MatIconModule
   ],
-  providers: [],
+  providers: [
+    provideAnimationsAsync()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
