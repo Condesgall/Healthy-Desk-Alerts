@@ -1,8 +1,9 @@
 import client from './config/database';
 import server from './config/server';
-import deskRoutes from './routes/DeskRoutes';
+//import deskRoutes from './routes/DeskRoutes';
 import userRoutes from './routes/UserRoutes';
 import profileRoutes from './routes/ProfileRoutes';
+import analyticsRoutes from './routes/AnalyticsRoutes';
 
 const port = process.env.PORT || 3000;
 
@@ -22,10 +23,13 @@ client.connect()
 
 
 // desk routes setup
-server.use('/api', deskRoutes)
+//server.use('/api', deskRoutes)
 
 // user routes setup
 server.use('/api', userRoutes)
 
 // profile routes setup
 server.use('/api', profileRoutes)
+
+// analytics routes setup
+server.use('/api', analyticsRoutes)

@@ -12,6 +12,11 @@ import { StreakPopupModule } from './streak-popup/streak-popup.module';
 import { RegisterComponent } from './register/register-view/register.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DeskConnectModule } from './desk-connect/desk-connect.module';
+import { ManagerModule } from '../manager/manager.module';
+import { TimerService } from './services/timer.service';
+import { ScoreModule } from './score/score.module';
+import { AlertModule } from './alert/alert.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
@@ -30,11 +35,14 @@ import { MatExpansionModule } from '@angular/material/expansion';
     AccountPopupModule,
     StreakPopupModule,
     DeskConnectModule,
+    ManagerModule,
+    ScoreModule,
+    AlertModule,
+    AnalyticsModule,
     MatExpansionModule
   ],
-  providers: [
-    provideAnimationsAsync()
-  ],
+  providers: [TimerService],
+  
   bootstrap: [AppComponent]
 })
 export class AppModule {

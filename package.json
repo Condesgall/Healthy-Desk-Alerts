@@ -12,7 +12,7 @@
     "test": "ng test",
     "serve:ssr:Healthy-Desk-": "node dist/Healthy-Desk-/server/server.mjs",
     "dev": "ts-node-dev --poll ./src/index.ts",
-    "start:backend": "npm run build:backend && node backend/dist/index.js && python desk-api.py"
+    "start:backend": "npm run build:backend && node backend/dist/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,14 +24,19 @@
     "@angular/material": "^18.2.12",
     "@angular/platform-browser-dynamic": "^18.2.12",
     "@angular/router": "^18.2.12",
+    "@types/highcharts": "^5.0.44",
     "@types/pg": "^8.11.10",
-    "angular": "^1.8.3",
+    "angular-highcharts": "^17.0.1",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "highcharts": "^11.4.8",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "pg": "^8.13.1",
+    "python3": "^0.0.1",
     "sequelize": "^6.37.5",
     "zone.js": "^0.14.10"
   },
@@ -40,6 +45,7 @@
     "@angular/compiler-cli": "^18.2.12",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/sequelize": "^4.28.20",
     "rimraf": "^6.0.1",
     "typescript": "^5.4.0"

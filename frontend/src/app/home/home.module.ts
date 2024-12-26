@@ -5,6 +5,7 @@ import { NavigationModule } from '../navigation/navigation.module';
 import { AccountPopupModule } from '../account-popup/account-popup.module';
 import { FormsModule } from '@angular/forms';
 import { AlertPopupModule } from '../alert-popup/alert-popup.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { AlertPopupModule } from '../alert-popup/alert-popup.module';
     NavigationModule,
     FormsModule,
     AccountPopupModule,
+    HttpClientModule,
     AlertPopupModule
   ],
   exports: [
