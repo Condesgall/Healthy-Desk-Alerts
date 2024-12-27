@@ -4,6 +4,7 @@ import { HomeViewComponent } from './home-view/home-view.component';
 import { NavigationModule } from '../navigation/navigation.module';
 import { AccountPopupModule } from '../account-popup/account-popup.module';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { AlertPopupModule } from '../alert-popup/alert-popup.module';
 
 @NgModule({
@@ -15,10 +16,7 @@ import { AlertPopupModule } from '../alert-popup/alert-popup.module';
     NavigationModule,
     FormsModule,
     AccountPopupModule,
-    AlertPopupModule
-  ],
-  exports: [
-    HomeViewComponent
+    HttpClientModule
   ]
 })
 export class HomeModule { }

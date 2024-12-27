@@ -1,6 +1,7 @@
 import { Model, DataTypes, Sequelize } from "sequelize";
 import sequelize from "../config/sequelize";
 import Profile from "./ProfileModel";
+import jwt from "jsonwebtoken";
 
 interface IUser {
     username: string;
@@ -17,7 +18,19 @@ class User extends Model implements IUser {
     public mot_lvl!: 'low' | 'medium' | 'high';
     public avg_standing_hrs!: number;
     public times_moved!: number;
-    public calories_burned!: number;
+    public alert_streak!: number;
+    public longest_streak!: number;
+    public cur_profile!: number;
+
+    public generateToken(): string {
+        console.log("Generating token for user:", this.email);
+        const payload = { userid: this.userid, email: this.email, username: this.username, isManager: false,
+            alert_streak: this.alert_streak, longest_streak: this.longest_streak, height: this.height
+         };
+        const secret = "123456";
+        console.log("Token data:", JSON.stringify(payload));
+        return jwt.sign(payload, secret);
+    }
 }
 
 User.init(
@@ -56,10 +69,18 @@ User.init(
             type: DataTypes.INTEGER,
             defaultValue: 0,
         },
-        calories_burned: {
+        alert_streak: {
             type: DataTypes.INTEGER,
             defaultValue: 0,
         },
+        longest_streak: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+        },
+        cur_profile: { 
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        }
     },
     {
         sequelize,
@@ -74,6 +95,13 @@ class Manager extends Model implements IUser {
     username!: string;
     email!: string;
     password!: string;
+
+    public generateToken(): string {
+        console.log("Generating token for user:", this.email);
+        const payload = { userid: this.managerid, email: this.email, username: this.username, isManager: true };
+        const secret = "123456";
+        return jwt.sign(payload, secret);
+    }
 }
 
 Manager.init(
