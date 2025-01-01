@@ -1,5 +1,5 @@
-<app-alert-popup *ngIf="alertPopupVisible"></app-alert-popup>
-<body>
+<app-alert-popup *ngIf="alertPopupService.alertPopupVisible$ | async"></app-alert-popup>
+<body>>
     <div id="arrows-container">
         <section id="arrows">
             <div id="current-height">{{ apiDeskService.position$ | async }} cm</div>

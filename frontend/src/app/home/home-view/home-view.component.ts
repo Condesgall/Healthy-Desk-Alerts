@@ -6,6 +6,7 @@ import { DeskApiService } from '../../services/desk-api.service';
 import { response } from 'express';
 import { LoginService } from '../../login/login.service';
 import { TimerService } from '../../services/timer.service';
+import { AlertPopupService } from '../../alert-popup/alert-popup.service';
 
 @Component({
   selector: 'app-home-view',
@@ -13,12 +14,17 @@ import { TimerService } from '../../services/timer.service';
   styleUrls: ['./home-view.component.css'],
 })
 export class HomeViewComponent implements OnInit {
+  alertPopupVisible: boolean = false;
+  alertMessage: string = '';
+  profile: Profile | undefined;
+  
   constructor(
     private homeService: HomeService,
     public apiDeskService: DeskApiService,
     private loginService: LoginService,
     private timerService: TimerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public alertPopupService: AlertPopupService
   ) {
     this.getDeskPosition();
   }
@@ -42,12 +48,28 @@ export class HomeViewComponent implements OnInit {
 
   private intervalId: any;
   private holdTime: number = 200;
-  alertPopupVisible = false;
 
-  async ngOnInit() {
-    this.alertPopupVisible = true;
+  ngOnInit(): void {
+
+    /*this.alertPopupService.updateTimerForNewProfile();
+
+    this.alertPopupService.alertPopupVisible$.subscribe((alertState) => {
+      this.alertPopupVisible = alertState.visible;
+      this.alertMessage = alertState.message;
+    });*/
+
+    this.subscribeToAlertPopup();
+    this.loadProfiles();
+    this.initializeSelectedProfile();
+    this.setupProfileTimers();
+
+    const selectedProfile = { name: 'John Doe', standingInterval: 15, sittingInterval: 60 };
+    this.homeService.setSelectedProfile(selectedProfile);
+
+    this.startTimeIntervals(selectedProfile);
+    //this.alertPopupService.showPopup('');
     // Loads the profiles stored in the db
-    await this.homeService.getAllProfiles().subscribe({
+    this.homeService.getAllProfiles().subscribe({
       next: () => {
         console.log('Profiles loaded successfully:', this.homeService.profiles);
         this.defaultProfiles = this.homeService.defaultProfiles;
@@ -58,11 +80,14 @@ export class HomeViewComponent implements OnInit {
       },
     });
 
-    await this.homeService.getSelectedProfile().subscribe((profile) => {
+    this.homeService.getSelectedProfile().subscribe((profile) => {
       if (profile) {
+        this.alertPopupService.updateTimerForNewProfile();
         profile.selected = true;
         console.log(profile);
         this.cdr.detectChanges();
+      } else {
+        console.log('No selected profile found');
       }
     });
 
@@ -71,6 +96,35 @@ export class HomeViewComponent implements OnInit {
     this.hoursStanding = this.homeService.hoursStanding;
     this.minutesStanding = this.homeService.minutesStanding;
     this.motivationLevel = this.homeService.motivationLevel;
+  }
+
+  subscribeToAlertPopup(): void {
+    this.alertPopupService.alertPopupVisible$.subscribe((alertState) => {
+      this.alertPopupVisible = alertState.visible;
+      this.alertMessage = alertState.message;
+    });
+  }
+
+  loadProfiles(): void {
+    this.homeService.getAllProfiles().subscribe({
+      next: () => {
+        this.defaultProfiles = this.homeService.defaultProfiles;
+        this.profiles = this.homeService.profiles;
+      },
+      error: (error) => console.log('Eroor loading profiles:', error),
+    });
+  }
+
+  initializeSelectedProfile(): void {
+    this.homeService.getSelectedProfile().subscribe((profile) => {
+      if (profile) {
+        this.alertPopupService.updateTimerForNewProfile();
+        profile.selected = true;
+        this.cdr.detectChanges();
+      } else {
+        console.log('No selected profile found');
+      }
+    });
   }
 
   getDeskPosition() {
@@ -320,6 +374,7 @@ export class HomeViewComponent implements OnInit {
     this.hoursStanding = 0;
     this.minutesStanding = 0;
     this.editMode = false;
+    this.motivationLevel = this.homeService.motivationLevel;
   }
 
   updateForm(profile: Profile) {
@@ -376,9 +431,18 @@ export class HomeViewComponent implements OnInit {
       this.curProfile.selected = false;
       this.curProfile = undefined;
       await this.homeService.setProfile(undefined);
+      this.alertPopupService.stopTimer();
       return;
     }
     this.curProfile = profile;
+    this.curProfile.selected = true;
+    await this.homeService.setProfile(profile);
+
+    if (profile.timer_sitting || profile.timer_standing) {
+      this.alertPopupService.showAlert('It is time to adjust your position');
+    } else {
+      this.alertPopupService.stopTimer();
+    }
 
     await this.homeService.setProfile(this.curProfile);
     // Remove 'selected' class from all profiles
@@ -403,5 +467,6 @@ export class HomeViewComponent implements OnInit {
 
   toggleAlertPopup() {
     this.alertPopupVisible = !this.alertPopupVisible;
+    this.alertPopupService.toggleAlertPopup();
   }
 }

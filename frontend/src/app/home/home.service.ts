@@ -2,8 +2,9 @@ import { ChangeDetectorRef, Injectable, OnInit } from '@angular/core';
 import { Profile } from '../models/ProfileModel';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { LoginService } from '../login/login.service';
+import { AlertPopupService } from '../alert-popup/alert-popup.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,13 +20,75 @@ export class HomeService implements OnInit {
   defaultProfiles: Profile[] = [];
   profileid: string = '';
   isUserStanding!: boolean;
+  private timerUpdateSubject = new BehaviorSubject<void>(undefined);
+  private selectedProfileSubject = new BehaviorSubject<any>(null);
+  private standingTimeReachedSubject = new BehaviorSubject<Boolean>(false);
+  private sittingTimeReachedSubject = new BehaviorSubject<Boolean>(false);
+  private dynamicMessageSubject = new BehaviorSubject<string>('');
 
   apiUrl = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient, private loginService: LoginService) {}
+  constructor(private http: HttpClient, private loginService: LoginService, private alertPopupService: AlertPopupService) {}
 
-  ngOnInit(): void {
+  setSelectedProfile(profile: any) {
+    this.selectedProfileSubject.next(profile);
+    this.updateDynamicMessage(profile);
+
+    if (profile) {
+      this.checkStandingSittingTimes(profile);
+    }
   }
+
+  get selectedProfile$() {
+    return this.selectedProfileSubject.asObservable();
+  }
+
+  private checkStandingSittingTimes(profile: Profile) {
+    const { hours: standingHours, minutes: standingMinutes } = this.calcHrsMins(profile.timer_standing);
+    const { hours: sittingHours, minutes: sittingMinutes } = this.calcHrsMins(profile.timer_sitting);
+  
+    const standingTimeInMilliseconds= this.convertMilliseconds(standingHours, standingMinutes);
+    const sittingTimeInMilliseconds= this.convertMilliseconds(sittingHours, sittingMinutes);
+  
+    this.standingTimeReachedSubject.next(standingTimeInMillis <=0);
+    this.sittingTimeReachedSubject.next(sittingTimeInMillis <=0);
+  
+    if (standingTimeInMillis <=0) {
+      this.alertPopupService.showAlert('Time to stand up');
+    } else if (sittingTimeInMillis <= 0) {
+      this.alertPopupService.showAlert('Time to sit down');
+    }
+  }
+
+  setStandingTimeReached$(isReached: boolean) {
+    this.standingTimeReachedSubject.next(isReached);
+    if (isReached) {
+      this.dynamicMessageSubject.next('Time to stand up');
+    }
+  }
+
+  setSittingTimeReached(isReached: boolean) {
+    this.sittingTimeReachedSubject.next(isReached);
+    if (isReached) {
+      this.dynamicMessageSubject.next('Time to sit down');
+    }
+  }
+
+  get dynamicMessage$() {
+    return this.dynamicMessageSubject.asObservable();
+  }
+
+  private updateDynamicMessage(profile: any) {
+    if (profile) {
+      this.dynamicMessageSubject.next(`Profile selected: ${profile.name}.`);
+    }
+  }
+
+  get standingTimeReached$() {
+    return this.standingTimeReachedSubject.asObservable();
+  }
+
+  ngOnInit(): void {}
 
   validateHours(hours: number) {
     if (hours > 23) hours = 23;
@@ -189,6 +252,14 @@ export class HomeService implements OnInit {
     } else return false;
   }
 
+  getTimerUpdates(): Observable<void> {
+    return this.timerUpdateSubject.asObservable();
+  }
+
+  updateTimer(): void {
+    this.timerUpdateSubject.next();
+  }
+
   calcHrsMins(time: string): { hours: number; minutes: number } {
     const timeFormat = /(\d+)h\s*(\d+)m/;
     // checks if the time is in the correct format
@@ -203,5 +274,9 @@ export class HomeService implements OnInit {
       return { hours, minutes };
     }
     return { hours: 0, minutes: 0 };
+  }
+
+  convertMilliseconds(hours: number, minutes: number): number {
+    return hours *3600000 + minutes * 60000;
   }
 }
