@@ -55,8 +55,6 @@ class UserService {
         password,
         height,
         mot_lvl,
-        avg_standing_hrs: 0, // Default value
-        times_moved: 0, // Default value
       });
       console.log("User created:", newUser);
       return newUser.generateToken();
@@ -101,6 +99,25 @@ class UserService {
       return null;
     } catch (error) {
       console.error("Error fetching current profile:", error);
+      throw error;
+    }
+  }
+
+  static async updatePassword(userid: number, password: string) {
+    try {
+      const result = await User.update(
+        {
+          password: password,
+        },
+        {
+          where: {
+            userid: userid,
+          },
+        }
+      );
+      return "success";
+    } catch (error) {
+      console.error("Error updating password:", error);
       throw error;
     }
   }
