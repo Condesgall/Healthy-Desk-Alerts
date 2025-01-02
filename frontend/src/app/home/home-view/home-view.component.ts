@@ -43,6 +43,7 @@ export class HomeViewComponent implements OnInit {
   private intervalId: any;
   private holdTime: number = 200;
   alertPopupVisible = false;
+  alertMessage: string = '';
 
   async ngOnInit() {
     this.alertPopupVisible = true;
@@ -71,6 +72,35 @@ export class HomeViewComponent implements OnInit {
     this.hoursStanding = this.homeService.hoursStanding;
     this.minutesStanding = this.homeService.minutesStanding;
     this.motivationLevel = this.homeService.motivationLevel;
+
+    this.initializeAlertLogic();
+  }
+
+  initializeAlertLogic() {
+    if (this.curProfile) {
+      const { timer_sitting, timer_standing } = this.curProfile;
+      if (timer_sitting && timer_standing) {
+        const sittingTime = this.parseTimerString(timer_sitting);
+        const standingTime = this.parseTimerString(timer_standing);
+
+        this.timerService.setTimer(sittingTime, standingTime, (isStanding: boolean) => {
+          this.alertPopupVisible = true;
+          this.alertMessage = isStanding
+          ? 'Time to switch to sitting.'
+          : 'Time to switch to standing.';
+        this.cdr.detectChanges();
+        });
+      }
+    }
+  }
+
+  parseTimerString(timer: string): number {
+    const [hours, minutes] = timer.split(' ').map((time) => parseInt(time));
+    return hours * 60 + minutes;
+  }
+
+  toggleAlertPopup() {
+    this.alertPopupVisible = !this.alertPopupVisible;
   }
 
   getDeskPosition() {
@@ -399,9 +429,5 @@ export class HomeViewComponent implements OnInit {
       // Start the appropriate timer based on the current state
       this.timerService.timersHandler();
     }
-  }
-
-  toggleAlertPopup() {
-    this.alertPopupVisible = !this.alertPopupVisible;
   }
 }

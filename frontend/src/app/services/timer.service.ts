@@ -159,6 +159,24 @@ export class TimerService {
     }
   }
 
+  setTimer(sittingTime: number, standingTime: number, callback: (isStanding: boolean) => void) {
+    this.curProfile.timer_sitting = sittingTime.toString();
+    this.curProfile.timer_standing = standingTime.toString();
+
+    const switchTimer = (isStanding: boolean) => {
+      if (isStanding) {
+        this.startStandingTimer();
+      } else {
+        this.startSittingTimer();
+      }
+
+      //calls callback with current state
+      callback(isStanding);
+    };
+
+    switchTimer(false);
+  }
+
   timerCompleteHandler(dataType: 'sittingComplete' | 'standingComplete') {
     if (dataType === 'sittingComplete') {
       this.apiDeskService.updateDeskPosition(this.curProfile.deskHeight);
