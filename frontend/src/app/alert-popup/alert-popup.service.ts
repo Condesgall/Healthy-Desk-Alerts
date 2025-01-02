@@ -5,5 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class AlertPopupService {
 
-  constructor() { }
+  showPopup(isStanding: boolean): void {
+    const message = isStanding ? 'Time to switch to sitting.' : 'Time to switch to standing.';
+    alert(message);
+  }
 }

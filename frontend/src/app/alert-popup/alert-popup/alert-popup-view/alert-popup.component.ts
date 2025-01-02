@@ -8,26 +8,20 @@ import { Component, OnInit } from '@angular/core';
 export class AlertPopupComponent implements OnInit {
   showPopup = false;
 
-  ngOnInit(): void {
-    this.startPopupTimer();
-  }
-
-  startPopupTimer(): void {
-      //Timer for popup
-      setTimeout(() => {
-        this.showPopup = true;
-      }, 1000) //Display popup after x amount of sec
-  }
+  ngOnInit(): void {}
 
   onAccept(): void {
     this.showPopup = false;
     console.log("Accepted");
-    this.startPopupTimer();
   }
 
   onDeny(): void {
     this.showPopup = false;
     console.log("Denied");
-    this.startPopupTimer();
+  }
+
+  togglePopupVisibility(visible: boolean): void {
+    console.log('Popup visibility:', visible);
+    this.showPopup = visible;
   }
 }

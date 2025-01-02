@@ -6,6 +6,7 @@ import { DeskApiService } from '../../services/desk-api.service';
 import { response } from 'express';
 import { LoginService } from '../../login/login.service';
 import { TimerService } from '../../services/timer.service';
+import { AlertPopupService } from '../../alert-popup/alert-popup.service';
 
 @Component({
   selector: 'app-home-view',
@@ -18,7 +19,8 @@ export class HomeViewComponent implements OnInit {
     public apiDeskService: DeskApiService,
     private loginService: LoginService,
     private timerService: TimerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertPopupService: AlertPopupService
   ) {
     this.getDeskPosition();
   }
@@ -84,11 +86,7 @@ export class HomeViewComponent implements OnInit {
         const standingTime = this.parseTimerString(timer_standing);
 
         this.timerService.setTimer(sittingTime, standingTime, (isStanding: boolean) => {
-          this.alertPopupVisible = true;
-          this.alertMessage = isStanding
-          ? 'Time to switch to sitting.'
-          : 'Time to switch to standing.';
-        this.cdr.detectChanges();
+          this.alertPopupService.showPopup(isStanding);
         });
       }
     }
